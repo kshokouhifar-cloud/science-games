@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بازی‌های علوم ششم</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #fff; min-height: 100vh; padding: 15px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  h1 { font-size: 1.9em; margin: 15px 0; text-align: center;
+       text-shadow: 0 0 20px rgba(100,200,255,.5); }
+  .sub { color: #b0c4de; margin-bottom: 20px; text-align: center; font-size: .95em; }
+
+  /* ===== screens ===== */
+  .screen { display: none; width: 100%; max-width: 1000px; }
+  .screen.active { display: block; }
+
+  /* ===== start screen ===== */
+  .start-box {
+    background: rgba(255,255,255,.06);
+    border: 2px solid rgba(100,200,255,.3);
+    border-radius: 20px;
+    padding: 35px 25px;
+    text-align: center;
+    max-width: 500px;
+    margin: 40px auto;
+  }
+  .start-box .big-emoji { font-size: 4em; margin-bottom: 10px; }
+  .start-box h2 { margin-bottom: 20px; font-size: 1.5em; color: #4fc3f7; }
+  .start-box input {
+    width: 100%; padding: 14px 18px;
+    border-radius: 12px; border: 2px solid #4fc3f7;
+    background: rgba(0,0,0,.3); color: #fff;
+    font-size: 1.1em; font-family: inherit;
+    text-align: center; margin-bottom: 18px;
+  }
+  .start-box input:focus { outline: none; border-color: #ffb74d; }
+  .start-btn {
+    background: linear-gradient(145deg, #4fc3f7, #0288d1);
+    border: none; color: #fff;
+    padding: 14px 40px; border-radius: 12px;
+    font-size: 1.15em; font-weight: bold;
+    cursor: pointer; font-family: inherit;
+    width: 100%;
+  }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79,195,247,.4); }
+  .welcome { color: #ffb74d; font-size: 1.05em; margin-bottom: 15px; }
+
+  /* ===== menu ===== */
+  .top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  .player-badge {
+    background: linear-gradient(145deg, #4caf50, #2e7d32);
+    padding: 8px 16px; border-radius: 20px;
+    font-size: .95em;
+  }
+  .logout-btn {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    color: #fff; padding: 8px 16px; border-radius: 20px;
+    cursor: pointer; font-family: inherit; font-size: .9em;
+  }
+  .logout-btn:hover { background: #ff5252; border-color: #ff5252; }
+
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: linear-gradient(145deg, #1e2a47, #2a3f5f);
+    border-radius: 16px;
+    padding: 18px 16px;
+    cursor: pointer;
+    border: 2px solid rgba(100,200,255,.2);
+    transition: all .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover { transform: translateY(-4px); border-color: #4fc3f7;
+                box-shadow: 0 10px 25px rgba(79,195,247,.3); }
+  .card .head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .card .icon {
+    font-size: 2.4em;
+    width: 60px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(79,195,247,.15);
+    border-radius: 14px;
+    flex-shrink: 0;
+  }
+  .card .info { flex: 1; min-width: 0; }
+  .card .title { font-size: 1.1em; font-weight: bold; color: #4fc3f7; }
+  .card .desc { font-size: .82em; color: #b0c4de; margin-top: 3px; }
+  .card .lesson-tag {
+    display: inline-block; font-size: .72em; color: #ffb74d;
+    background: rgba(255,183,77,.12); padding: 2px 8px; border-radius: 20px;
+    margin-top: 4px;
+  }
+
+  /* leaderboard in card */
+  .lb {
+    border-top: 1px dashed rgba(255,255,255,.15);
+    padding-top: 10px; margin-top: 10px;
+  }
+  .lb-title { font-size: .8em; color: #ffb74d; margin-bottom: 6px; }
+  .lb-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .lb-item {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .82em; padding: 4px 8px; border-radius: 8px;
+    background: rgba(255,255,255,.04);
+  }
+  .lb-item.gold { background: rgba(255,215,0,.15); color: #ffd700; }
+  .lb-item.silver { background: rgba(192,192,192,.12); color: #e0e0e0; }
+  .lb-item.bronze { background: rgba(205,127,50,.12); color: #e0a060; }
+  .lb-item .rank { font-weight: bold; margin-left: 6px; }
+  .lb-item .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-item .pts { font-weight: bold; }
+  .lb-empty { font-size: .8em; color: #666; text-align: center; padding: 6px; }
+
+  /* ===== game ===== */
+  .game-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; gap: 10px; flex-wrap: wrap;
+  }
+  .back-btn {
+    background: #ff5252; border: none; color: #fff;
+    padding: 10px 18px; border-radius: 10px; cursor: pointer;
+    font-family: inherit; font-size: .95em;
+  }
+  .back-btn:hover { background: #ff1744; }
+  .score-box {
+    background: linear-gradient(145deg, #4caf50, #388e3c);
+    padding: 10px 20px; border-radius: 10px; font-weight: bold;
+    box-shadow: 0 3px 10px rgba(76,175,80,.3);
+  }
+
+  .game-content {
+    background: rgba(255,255,255,.05);
+    border-radius: 20px;
+    padding: 25px 20px;
+    text-align: center;
+    border: 1px solid rgba(100,200,255,.2);
+    min-height: 380px;
+  }
+  .progress { color: #b0c4de; margin-bottom: 15px; font-size: .9em; }
+  .question { font-size: 1.25em; margin-bottom: 20px; line-height: 1.7; }
+  .big-item { font-size: 4.5em; margin: 10px 0; }
+  .item-name { font-size: 1.6em; margin-bottom: 25px; color: #ffb74d; font-weight: bold; }
+
+  .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .opt-btn {
+    background: linear-gradient(145deg, #2a3f5f, #1e2a47);
+    border: 2px solid #4fc3f7;
+    color: #fff; padding: 14px 22px;
+    border-radius: 12px; font-size: 1em;
+    cursor: pointer; font-family: inherit;
+    transition: all .2s; min-width: 110px;
+  }
+  .opt-btn:hover { background: #4fc3f7; color: #1a1a2e; }
+  .opt-btn.correct { background: #4caf50; border-color: #4caf50; }
+  .opt-btn.wrong { background: #f44336; border-color: #f44336; }
+  .opt-btn:disabled { cursor: default; }
+
+  .feedback { font-size: 1.05em; margin-top: 18px; min-height: 30px;
+              font-weight: bold; line-height: 1.6; }
+  .feedback.ok { color: #66bb6a; }
+  .feedback.no { color: #ff5252; }
+
+  .layers-wrap { display: flex; flex-direction: column; gap: 10px;
+                 max-width: 480px; margin: 15px auto; }
+  .layer-item {
+    padding: 14px 18px; border-radius: 12px; cursor: pointer;
+    font-weight: bold; font-size: 1.05em; transition: all .2s;
+    border: 2px solid transparent; text-align: right; color: #1a1a2e;
+  }
+  .layer-item:hover { transform: scale(1.02); }
+  .layer-item.done { opacity: .35; cursor: default; }
+  .layer-item.done::after { content: ' ✓'; color: #2e7d32; }
+  .layer-item .hint { font-size: .75em; opacity: .8; display: block; margin-top: 3px; }
+
+  .chain-slots { display: flex; gap: 6px; justify-content: center;
+                 flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+  .slot {
+    min-width: 78px; min-height: 78px; padding: 6px;
+    border: 2px dashed rgba(100,200,255,.4); border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; background: rgba(255,255,255,.03);
+  }
+  .slot.filled { border-style: solid; border-color: #4caf50; background: rgba(76,175,80,.15); }
+  .slot .em { font-size: 1.8em; }
+  .slot .nm { font-size: .7em; color: #b0c4de; margin-top: 3px; }
+  .arrow { font-size: 1.3em; color: #4fc3f7; }
+  .pool { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .pool-item {
+    width: 82px; padding: 6px;
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(255,255,255,.1); border-radius: 12px;
+    cursor: pointer; border: 2px solid transparent; transition: all .2s;
+  }
+  .pool-item:hover { border-color: #4fc3f7; transform: scale(1.05); }
+  .pool-item .em { font-size: 1.8em; }
+  .pool-item .nm { font-size: .72em; color: #b0c4de; margin-top: 3px; }
+  .pool-item.used { opacity: .15; pointer-events: none; }
+
+  .finish { text-align: center; padding: 30px 15px; }
+  .finish h2 { font-size: 1.7em; margin-bottom: 15px; color: #ffb74d; }
+  .finish .big-score { font-size: 3.2em; color: #4fc3f7; margin: 15px 0; font-weight: bold; }
+  .finish .msg { color: #b0c4de; margin-bottom: 25px; font-size: 1em; line-height: 1.7; }
+  .again-btn {
+    background: linear-gradient(145deg, #4fc3f7, #0288d1);
+    border: none; color: #fff; padding: 14px 32px;
+    border-radius: 12px; font-size: 1.05em; cursor: pointer;
+    font-family: inherit; font-weight: bold;
+  }
+  .again-btn:hover { transform: translateY(-2px); }
+
+  @media (max-width: 500px) {
+    h1 { font-size: 1.4em; }
+    .menu { grid-template-columns: 1fr; }
+    .big-item { font-size: 3.5em; }
+    .item-name { font-size: 1.3em; }
+    .question { font-size: 1.05em; }
+    .opt-btn { padding: 11px 14px; font-size: .92em; min-width: 95px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SCREEN 1: START ============ -->
+<div class="screen active" id="screen-start">
+  <div class="start-box">
+    <div class="big-emoji">🔬</div>
+    <h2>به بازی‌های علوم ششم خوش آمدی!</h2>
+    <p style="color:#b0c4de; margin-bottom:20px;">اسمت رو بنویس تا شروع کنیم</p>
+    <input id="nameInput" type="text" placeholder="مثلاً: علی رضایی" maxlength="20" autocomplete="off">
+    <button class="start-btn" onclick="startWithName()">شروع بازی 🚀</button>
+  </div>
+</div>
+
+<!-- ============ SCREEN 2: MENU ============ -->
+<div class="screen" id="screen-menu">
+  <div class="top-bar">
+    <div class="player-badge">👤 <span id="menuName"></span></div>
+    <button class="logout-btn" onclick="logout()">تغییر کاربر</button>
+  </div>
+  <h1>📚 بازی‌های علوم ششم</h1>
+  <p class="sub">روی هر درس کلیک کن تا بازی کنی</p>
+  <div class="menu" id="menu"></div>
+</div>
+
+<!-- ============ SCREEN 3: GAME ============ -->
+<div class="screen" id="screen-game">
+  <div class="game-header">
+    <button class="back-btn" onclick="backToMenu()">← بازگشت</button>
+    <div class="score-box">امتیاز: <span id="scoreEl">0</span></div>
+  </div>
+  <div class="game-content" id="gameContent"></div>
+</div>
+
+<script>
+// ==================================================
+// ذخیره و بارگذاری
+// ==================================================
+const STORAGE_KEY = 'science_game_scores_v1';
+const NAME_KEY = 'science_game_player_name';
+
+function loadScores() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function saveScores(s) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+}
+function saveScore(gameId, name, score) {
+  const all = loadScores();
+  if (!all[gameId]) all[gameId] = [];
+  all[gameId].push({
+    name: name,
+    score: score,
+    date: new Date().toLocaleDateString('fa-IR')
+  });
+  // sort desc, keep top 20
+  all[gameId].sort((a,b) => b.score - a.score);
+  all[gameId] = all[gameId].slice(0, 20);
+  saveScores(all);
+}
+function getTop3(gameId) {
+  const all = loadScores();
+  return (all[gameId] || []).slice(0, 3);
+}
+
+// ==================================================
+// ابزار
+// ==================================================
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function pickN(arr, n) { return shuffle(arr).slice(0, n); }
+
+function show(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ==================================================
+// state
+// ==================================================
+const state = { player: '', game: null, score: 0, idx: 0, data: {} };
+
+// ==================================================
+// START SCREEN
+// ==================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(NAME_KEY);
+  if (saved) document.getElementById('nameInput').value = saved;
+});
+
+function startWithName() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (name.length < 2) {
+    alert('لطفاً نامت را وارد کن (حداقل ۲ حرف)');
+    return;
+  }
+  state.player = name;
+  localStorage.setItem(NAME_KEY, name);
+  document.getElementById('menuName').textContent = name;
+  show('screen-menu');
+  renderMenu();
+}
+
+function logout() {
+  if (!confirm('می‌خوای کاربر رو عوض کنی؟')) return;
+  state.player = '';
+  localStorage.removeItem(NAME_KEY);
+  document.getElementById('nameInput').value = '';
+  show('screen-start');
+}
+
+// ==================================================
+// MENU
+// ==================================================
+const GAMES = [
+  { id: 'lesson1',  icon: '🔬', title: 'زنگ علوم',        desc: 'مراحل روش علمی',           lesson: 'درس ۱' },
+  { id: 'lesson2',  icon: '🌿', title: 'طبیعی یا مصنوعی', desc: 'دسته‌بندی مواد',           lesson: 'درس ۲' },
+  { id: 'lesson3',  icon: '🧪', title: 'اسید و باز',      desc: 'کاغذ pH و اسیدها',         lesson: 'درس ۳' },
+  { id: 'lesson4',  icon: '🌍', title: 'لایه‌های زمین',   desc: 'پوسته تا هسته',            lesson: 'درس ۴' },
+  { id: 'lesson5',  icon: '🌋', title: 'زمین‌لرزه و آتش‌فشان', desc: 'ایمنی و پدیده‌ها',      lesson: 'درس ۵' },
+  { id: 'lesson6',  icon: '⚽', title: 'ورزش و نیرو',      desc: 'نیرو، اصطکاک، فشار',      lesson: 'درس ۶ و ۷' },
+  { id: 'lesson9',  icon: '⚡', title: 'سفر انرژی',        desc: 'تبدیلات انرژی',            lesson: 'درس ۹' },
+  { id: 'lesson11', icon: '🌱', title: 'فتوسنتز',         desc: 'غذاسازی گیاهان',          lesson: 'درس ۱۱' },
+  { id: 'lesson12', icon: '🦊', title: 'زنجیره غذایی',    desc: 'رابطه جانداران',           lesson: 'درس ۱۲' },
+  { id: 'lesson13', icon: '🦠', title: 'میکروب‌ها',        desc: 'دفاع بدن و بیماری',       lesson: 'درس ۱۳' },
+];
+
+function renderMenu() {
+  const menu = document.getElementById('menu');
+  menu.innerHTML = GAMES.map(g => {
+    const top = getTop3(g.id);
+    let lbHTML = '';
+    if (top.length === 0) {
+      lbHTML = '<div class="lb-empty">هنوز کسی بازی نکرده - تو اول باش! 🥇</div>';
+    } else {
+      const classes = ['gold', 'silver', 'bronze'];
+      const medals = ['🥇', '🥈', '🥉'];
+      lbHTML = top.map((t, i) => `
+        <div class="lb-item ${classes[i]}">
+          <span class="rank">${medals[i]}</span>
+          <span class="name">${escapeHtml(t.name)}</span>
+          <span class="pts">${t.score}</span>
+        </div>
+      `).join('');
+    }
+    return `
+      <div class="card" onclick="startGame('${g.id}')">
+        <div class="head">
+          <div class="icon">${g.icon}</div>
+          <div class="info">
+            <div class="title">${g.title}</div>
+            <div class="desc">${g.desc}</div>
+            <div class="lesson-tag">${g.lesson}</div>
+          </div>
+        </div>
+        <div class="lb">
+          <div class="lb-title">🏆 برترین‌ها</div>
+          <div class="lb-list">${lbHTML}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function backToMenu() {
+  show('screen-menu');
+  renderMenu();
+}
+
+// ==================================================
+// GAME ENGINE
+// ==================================================
+function startGame(id) {
+  state.game = id;
+  state.score = 0;
+  state.idx = 0;
+  updateScore();
+  show('screen-game');
+  const fn = GAME_STARTERS[id];
+  if (fn) fn();
+}
+function updateScore() {
+  document.getElementById('scoreEl').textContent = state.score;
+}
+function finishGame(maxScore, msg) {
+  saveScore(state.game, state.player, state.score);
+  const el = document.getElementById('gameContent');
+  const pct = Math.round(state.score / maxScore * 100);
+  let emoji = '💪', extra = msg || '';
+  if (pct >= 90) { emoji = '🏆'; extra = 'عالی! تو یک دانشمند کوچولویی!'; }
+  else if (pct >= 70) { emoji = '🌟'; extra = 'خیلی خوب بود!'; }
+  else if (pct >= 50) { emoji = '👍'; extra = 'بد نبود، ادامه بده!'; }
+  else { emoji = '💪'; extra = 'اشکالی نداره، دوباره تلاش کن!'; }
+
+  // top 3 after this game
+  const top = getTop3(state.game);
+  const classes = ['gold','silver','bronze'];
+  const medals = ['🥇','🥈','🥉'];
+  const lbHTML = top.map((t, i) => `
+    <div class="lb-item ${classes[i]}" style="margin:4px 0;">
+      <span class="rank">${medals[i]}</span>
+      <span class="name">${escapeHtml(t.name)}</span>
+      <span class="pts">${t.score}</span>
+    </div>
+  `).join('');
+
+  el.innerHTML = `
+    <div class="finish">
+      <h2>${emoji} بازی تمام شد!</h2>
+      <div class="big-score">${state.score} / ${maxScore}</div>
+      <p class="msg">${extra}</p>
+      <div style="background:rgba(255,255,255,.05); border-radius:14px; padding:14px; margin-bottom:20px; max-width:380px; margin-left:auto; margin-right:auto;">
+        <div style="color:#ffb74d; font-size:.9em; margin-bottom:8px;">🏆 برترین‌های این درس</div>
+        <div class="lb-list">${lbHTML}</div>
+      </div>
+      <button class="again-btn" onclick="startGame('${state.game}')">🔄 بازی دوباره</button>
+      <button class="again-btn" style="background:linear-gradient(145deg,#7e57c2,#4527a0); margin-top:10px;" onclick="backToMenu()">📚 درس‌های دیگر</button>
+    </div>
+  `;
+}
+
+// ==================================================
+// GAME 1: درس ۱ - زنگ علوم (روش علمی)
+// ==================================================
+const LESSON1 = [
+  { q: 'در آزمایش «برخورد شهاب‌سنگ با زمین»، اولین کاری که یک دانشمند می‌کند چیست؟',
+    opts: ['نتیجه‌گیری', 'مشاهده و طرح پرسش', 'رسم نمودار', 'ساختن مدل'], ans: 1 },
+  { q: '«هرچه شهاب‌سنگ بزرگ‌تر باشد، گودال بزرگ‌تری ایجاد می‌کند» این جمله چیست؟',
+    opts: ['نتیجه', 'پیش‌بینی (فرضیه)', 'مشاهده', 'آزمایش'], ans: 1 },
+  { q: 'برای بررسی فرضیه، دانشمند باید چه کار کند؟',
+    opts: ['فقط فکر کند', 'آزمایش و کاوش کند', 'از معلم بپرسد', 'کتاب بخواند'], ans: 1 },
+  { q: 'در آزمایش شهاب‌سنگ، از توپ و ظرف خاک استفاده شد. توپ نقش چه چیزی را داشت؟',
+    opts: ['زمین', 'شهاب‌سنگ', 'جو', 'ماه'], ans: 1 },
+  { q: 'کدام‌یک از مراحل روش علمی، در انتها انجام می‌شود؟',
+    opts: ['مشاهده', 'فرضیه', 'آزمایش', 'نتیجه‌گیری'], ans: 3 },
+  { q: 'اگر در آزمایش، نتیجه‌ی فرضیه‌ی ما را تأیید نکند، چه باید کرد؟',
+    opts: ['آزمایش را پاک کنیم', 'فرضیه را تغییر دهیم', 'دروغ بگوییم', 'رها کنیم'], ans: 1 },
+  { q: 'در آزمایش شهاب‌سنگ، برای بررسی اثر «سرعت»، چه چیزی را تغییر می‌دهیم؟',
+    opts: ['جرم توپ', 'نوع خاک', 'ارتفاع رها کردن', 'اندازه ظرف'], ans: 2 },
+  { q: 'مهم‌ترین کاری که یک دانشمند پس از آزمایش انجام می‌دهد چیست؟',
+    opts: ['خوابیدن', 'ثبت و گزارش مشاهدات', 'بازی', 'خوردن'], ans: 1 },
+  { q: 'در روش علمی، «متغیر» یعنی چه؟',
+    opts: ['چیزی که ثابت می‌ماند', 'چیزی که تغییر می‌کند', 'نتیجه آزمایش', 'فرضیه'], ans: 1 },
+  { q: 'کدام‌یک نمونه‌ای از مشاهده است؟',
+    opts: ['«فکر می‌کنم...»', '«شاید...»', '«می‌بینم که توپ سریع‌تر فرورفت»', '«باید بسازیم»'], ans: 2 },
+];
+
+const GAME_STARTERS = {};
+
+GAME_STARTERS.lesson1 = function() {
+  state.data = { items: pickN(LESSON1, 6), answered: false };
+  renderL1();
+};
+function renderL1() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 15);
+  const item = state.data.items[state.idx];
+  const opts = shuffle(item.opts.map((o, i) => ({ o, correct: i === item.ans })));
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">${item.q}</div>
+    <div class="btn-group">
+      ${opts.map((o, i) => `<button class="opt-btn" onclick="answerL1(${o.correct}, this)">${o.o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL1(correct, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (correct) { state.score += 15; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = '✅ آفرین!'; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = '❌ اشتباه بود.'; }
+  state.idx++;
+  setTimeout(renderL1, 1200);
+}
+
+// ==================================================
+// GAME 2: درس ۲ - طبیعی یا مصنوعی
+// ==================================================
+const LESSON2 = [
+  { n:'سنگ', e:'🪨', t:'طبیعی' }, { n:'پشم گوسفند', e:'🐑', t:'طبیعی' },
+  { n:'چوب درخت', e:'🪵', t:'طبیعی' }, { n:'نفت خام', e:'🛢️', t:'طبیعی' },
+  { n:'پنبه', e:'🌾', t:'طبیعی' }, { n:'ماسه', e:'🏖️', t:'طبیعی' },
+  { n:'سنگ آهن', e:'⛏️', t:'طبیعی' }, { n:'پوست حیوان', e:'🦌', t:'طبیعی' },
+  { n:'آب دریا', e:'🌊', t:'طبیعی' }, { n:'هوا', e:'💨', t:'طبیعی' },
+  { n:'مداد', e:'✏️', t:'مصنوعی' }, { n:'کاغذ', e:'📄', t:'مصنوعی' },
+  { n:'کیف', e:'🎒', t:'مصنوعی' }, { n:'لاستیک خودرو', e:'🛞', t:'مصنوعی' },
+  { n:'شیشه', e:'🥛', t:'مصنوعی' }, { n:'دارو', e:'💊', t:'مصنوعی' },
+  { n:'پلاستیک', e:'🧴', t:'مصنوعی' }, { n:'آجر', e:'🧱', t:'مصنوعی' },
+  { n:'کتاب', e:'📚', t:'مصنوعی' }, { n:'فولاد', e:'🔩', t:'مصنوعی' },
+];
+
+GAME_STARTERS.lesson2 = function() {
+  state.data = { items: pickN(LESSON2, 10), answered: false };
+  renderL2();
+};
+function renderL2() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 10);
+  const item = state.data.items[state.idx];
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">این ماده طبیعی است یا مصنوعی؟</div>
+    <div class="big-item">${item.e}</div>
+    <div class="item-name">${item.n}</div>
+    <div class="btn-group">
+      <button class="opt-btn" onclick="answerL2('طبیعی', this)">🌿 طبیعی</button>
+      <button class="opt-btn" onclick="answerL2('مصنوعی', this)">🏭 مصنوعی</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL2(choice, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const item = state.data.items[state.idx];
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (choice === item.t) { state.score += 10; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = `✅ درسته! "${item.n}" ${item.t} است.`; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.textContent.includes(item.t)) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = `❌ نه، "${item.n}" ${item.t} است.`; }
+  state.idx++;
+  setTimeout(renderL2, 1300);
+}
+
+// ==================================================
+// GAME 3: درس ۳ - اسید و باز
+// ==================================================
+const LESSON3 = [
+  { n:'لیموترش', e:'🍋', t:'اسید' }, { n:'سرکه', e:'🧴', t:'اسید' },
+  { n:'پرتقال', e:'🍊', t:'اسید' }, { n:'کیوی', e:'🥝', t:'اسید' },
+  { n:'ماست ترش', e:'🥛', t:'اسید' }, { n:'جوهر نمک', e:'⚗️', t:'اسید صنعتی' },
+  { n:'آب اکسیژنه', e:'💧', t:'سفیدکننده' }, { n:'مایع سفیدکننده', e:'🧼', t:'سفیدکننده' },
+  { n:'گاز کلر', e:'💨', t:'سفیدکننده' }, { n:'جوش شیرین', e:'🥄', t:'باز' },
+  { n:'صابون', e:'🧼', t:'باز' }, { n:'خمیر دندان', e:'🪥', t:'باز' },
+  { n:'آب خالص', e:'💧', t:'خنثی' }, { n:'نمک طعام', e:'🧂', t:'خنثی' },
+];
+
+GAME_STARTERS.lesson3 = function() {
+  state.data = { items: pickN(LESSON3, 10), answered: false };
+  renderL3();
+};
+function renderL3() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 10);
+  const item = state.data.items[state.idx];
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">این ماده چه نوعی است؟</div>
+    <div class="big-item">${item.e}</div>
+    <div class="item-name">${item.n}</div>
+    <div class="btn-group">
+      <button class="opt-btn" onclick="answerL3('اسید', this)">🍋 اسید</button>
+      <button class="opt-btn" onclick="answerL3('اسید صنعتی', this)">⚗️ اسید صنعتی</button>
+      <button class="opt-btn" onclick="answerL3('سفیدکننده', this)">💧 سفیدکننده</button>
+      <button class="opt-btn" onclick="answerL3('باز', this)">🥄 باز</button>
+      <button class="opt-btn" onclick="answerL3('خنثی', this)">⚪ خنثی</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL3(choice, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const item = state.data.items[state.idx];
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (choice === item.t) { state.score += 10; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = `✅ درسته!`; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.textContent.includes(item.t)) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = `❌ نه، "${item.n}" ${item.t} است.`; }
+  state.idx++;
+  setTimeout(renderL3, 1300);
+}
+
+// ==================================================
+// GAME 4: درس ۴ - لایه‌های زمین
+// ==================================================
+const LAYERS_DATA = [
+  { n:'پوسته',        e:'🟫', hint:'لایه نازک بیرونی - ما روی آن زندگی می‌کنیم', color:'#a0522d', order:1 },
+  { n:'گوشته بالایی', e:'🟧', hint:'خمیری شکل - سنگ‌کره روی آن شناور است', color:'#ff8c00', order:2 },
+  { n:'گوشته زیرین',  e:'🟠', hint:'جامد - تا عمق ۲۹۰۰ کیلومتری', color:'#d2691e', order:3 },
+  { n:'هسته خارجی',   e:'🟡', hint:'مذاب - بیشتر از آهن و نیکل', color:'#ffd700', order:4 },
+  { n:'هسته داخلی',   e:'⚪', hint:'جامد - در عمق ۵۱۰۰ تا ۶۴۰۰ کیلومتری', color:'#f0e68c', order:5 },
+];
+
+GAME_STARTERS.lesson4 = function() {
+  state.data = { order: 1, items: shuffle(LAYERS_DATA) };
+  renderL4();
+};
+function renderL4() {
+  const orderNames = ['سطح زمین', 'زیر پوسته', 'زیر گوشته بالایی', 'بالای هسته داخلی', 'مرکز زمین'];
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">مرحله ${state.data.order} از ۵</div>
+    <div class="question">لایه بعدی از سطح زمین به سمت مرکز:<br>
+      <span style="font-size:.85em;color:#ffb74d;">👉 ${orderNames[state.data.order-1]}</span>
+    </div>
+    <div class="layers-wrap" id="layersWrap"></div>
+    <div class="feedback" id="fb"></div>
+  `;
+  const wrap = document.getElementById('layersWrap');
+  state.data.items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'layer-item';
+    div.style.background = item.color;
+    div.innerHTML = `${item.e} ${item.n}<span class="hint">${item.hint}</span>`;
+    if (item.order < state.data.order) div.classList.add('done');
+    else div.onclick = () => pickLayer(item, div);
+    wrap.appendChild(div);
+  });
+}
+function pickLayer(item, div) {
+  const fb = document.getElementById('fb');
+  if (item.order === state.data.order) {
+    state.score += 20; updateScore();
+    div.classList.add('done');
+    fb.className = 'feedback ok'; fb.textContent = `✅ درست! ${item.n}`;
+    state.data.order++;
+    if (state.data.order > 5) setTimeout(() => finishGame(100), 900);
+    else setTimeout(renderL4, 900);
+  } else {
+    fb.className = 'feedback no'; fb.textContent = `❌ نه، اینجا جای "${item.n}" نیست.`;
+  }
+}
+
+// ==================================================
+// GAME 5: درس ۵ - زمین‌لرزه و آتش‌فشان
+// ==================================================
+const LESSON5 = [
+  { q:'هنگام وقوع زمین‌لرزه در کلاس، بهترین کار چیست؟',
+    opts:['دویدن به حیاط','پناه گرفتن زیر میز محکم','ایستادن کنار پنجره','فریاد زدن'], ans:1 },
+  { q:'محل آزاد شدن انرژی در زمین‌لرزه چه نام دارد؟',
+    opts:['کانون','دهانه','مخروط','دودکش'], ans:0 },
+  { q:'انرژی زمین‌لرزه چگونه به سطح زمین می‌رسد؟',
+    opts:['با باد','با امواج لرزه‌ای','با آب','با نور'], ans:1 },
+  { q:'کدام لایه زمین حالت «خمیری» دارد؟',
+    opts:['پوسته','گوشته بالایی','هسته داخلی','هسته خارجی'], ans:1 },
+  { q:'در آتش‌فشان، مواد مذاب از کجا خارج می‌شوند؟',
+    opts:['پوسته','دهانه','دودکش','هسته'], ans:1 },
+  { q:'مهم‌ترین گازهای خارج‌شده از آتش‌فشان کدامند؟',
+    opts:['اکسیژن و نیتروژن','بخار آب و کربن‌دی‌اکسید','هلیوم و نئون','ازن'], ans:1 },
+  { q:'آتش‌فشانی که فقط گاز از آن خارج می‌شود چه نام دارد؟',
+    opts:['فعال','نیمه‌فعال','خاموش','مرده'], ans:1 },
+  { q:'کدام‌یک از آتش‌فشان‌های ایران نیمه‌فعال است؟',
+    opts:['سهند','دماوند','سبلان','تفتان'], ans:1 },
+  { q:'قبل از زمین‌لرزه، کدام اقدام درست‌تر است؟',
+    opts:['ساختن خانه محکم','خوابیدن','بازی','بی‌توجهی'], ans:0 },
+  { q:'سنگ‌های آتش‌فشانی مانند پوکه چه کاربردی دارند؟',
+    opts:['خوراکی','ساخت‌وساز و سایش','سوخت','دارو'], ans:1 },
+];
+
+GAME_STARTERS.lesson5 = function() {
+  state.data = { items: pickN(LESSON5, 6), answered: false };
+  renderL5();
+};
+function renderL5() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 15);
+  const item = state.data.items[state.idx];
+  const opts = shuffle(item.opts.map((o, i) => ({ o, correct: i === item.ans })));
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">${item.q}</div>
+    <div class="btn-group">
+      ${opts.map(o => `<button class="opt-btn" onclick="answerL5(${o.correct}, this)">${o.o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL5(correct, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (correct) { state.score += 15; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = '✅ درسته!'; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = '❌ اشتباه بود.'; }
+  state.idx++;
+  setTimeout(renderL5, 1300);
+}
+
+// ==================================================
+// GAME 6: درس ۶ و ۷ - ورزش و نیرو
+// ==================================================
+const LESSON6 = [
+  { q:'وقتی توپی را شوت می‌کنی، چه نیرویی وارد کرده‌ای؟',
+    opts:['نیروی گرانش','نیروی ضربه/فشار','نیروی مغناطیس','نیروی اصطکاک'], ans:1 },
+  { q:'نیرویی که مانع حرکت اجسام روی سطح می‌شود، چه نام دارد؟',
+    opts:['گرانش','اصطکاک','مغناطیس','الکتریکی'], ans:1 },
+  { q:'نیروی جاذبه زمین به هر جسم چه می‌گوید؟',
+    opts:['جرم','وزن','حجم','چگالی'], ans:1 },
+  { q:'واحد اندازه‌گیری نیرو چیست؟',
+    opts:['کیلوگرم','نیوتون','متر','ثانیه'], ans:1 },
+  { q:'کدام‌یک نیروی غیرتماسی است؟',
+    opts:['اصطکاک','گرانش','کشیدن طناب','هل دادن'], ans:1 },
+  { q:'برای کاهش اصطکاک در دوچرخه چه می‌کنند؟',
+    opts:['روغن‌کاری زنجیر','پاره کردن لاستیک','افزودن وزنه','تند رکاب زدن'], ans:0 },
+  { q:'در روزهای برفی برای افزایش اصطکاک جاده چه می‌کنند؟',
+    opts:['آب می‌پاشند','نمک و شن می‌پاشند','روغن می‌زنند','یخ می‌زنند'], ans:1 },
+  { q:'نیروی مقاومت هوا در چه چیزی کم‌تر است؟',
+    opts:['ماشین آیرودینامیک','کامیون بزرگ','اتوبوس','کتاب باز'], ans:0 },
+  { q:'چتر نجات از کدام نیرو استفاده می‌کند؟',
+    opts:['مقاومت هوا','مغناطیس','الکتریسیته','اصطکاک'], ans:0 },
+  { q:'وقتی دو نیروی مساوی از دو طرف بر جسم وارد شود، جسم چه می‌کند؟',
+    opts:['حرکت می‌کند','ساکن می‌ماند','منفجر می‌شود','ذوب می‌شود'], ans:1 },
+];
+
+GAME_STARTERS.lesson6 = function() {
+  state.data = { items: pickN(LESSON6, 6), answered: false };
+  renderL6();
+};
+function renderL6() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 15);
+  const item = state.data.items[state.idx];
+  const opts = shuffle(item.opts.map((o, i) => ({ o, correct: i === item.ans })));
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">${item.q}</div>
+    <div class="btn-group">
+      ${opts.map(o => `<button class="opt-btn" onclick="answerL6(${o.correct}, this)">${o.o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL6(correct, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (correct) { state.score += 15; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = '✅ درسته!'; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = '❌ اشتباه بود.'; }
+  state.idx++;
+  setTimeout(renderL6, 1300);
+}
+
+// ==================================================
+// GAME 7: درس ۹ - سفر انرژی
+// ==================================================
+const LESSON9 = [
+  { q:'چراغ قوه', e:'🔦', ans:'شیمیایی ← نورانی', opts:['شیمیایی ← نورانی','الکتریکی ← حرکتی','نورانی ← گرمایی','صوتی ← حرکتی'] },
+  { q:'اتو', e:'🧺', ans:'الکتریکی ← گرمایی', opts:['شیمیایی ← گرمایی','الکتریکی ← گرمایی','نورانی ← حرکتی','صوتی ← نورانی'] },
+  { q:'بادبزن برقی', e:'🪭', ans:'الکتریکی ← حرکتی', opts:['شیمیایی ← صوتی','نورانی ← الکتریکی','الکتریکی ← حرکتی','گرمایی ← حرکتی'] },
+  { q:'طبل (وقتی می‌کوبیم)', e:'🥁', ans:'حرکتی ← صوتی', opts:['حرکتی ← صوتی','الکتریکی ← نورانی','شیمیایی ← صوتی','گرمایی ← نوری'] },
+  { q:'لامپ روشن', e:'💡', ans:'الکتریکی ← نورانی و گرمایی', opts:['الکتریکی ← نورانی و گرمایی','شیمیایی ← نورانی','نورانی ← الکتریکی','حرکتی ← نورانی'] },
+  { q:'خودرو بنزینی', e:'🚗', ans:'شیمیایی ← حرکتی و گرمایی', opts:['الکتریکی ← حرکتی','شیمیایی ← حرکتی و گرمایی','نورانی ← حرکتی','صوتی ← حرکتی'] },
+  { q:'اسباب‌بازی کوکی', e:'🐭', ans:'ذخیره‌شده ← حرکتی', opts:['شیمیایی ← حرکتی','ذخیره‌شده ← حرکتی','الکتریکی ← نورانی','گرمایی ← صوتی'] },
+  { q:'سد برق‌آبی', e:'🌊', ans:'ذخیره‌شده ← الکتریکی', opts:['شیمیایی ← الکتریکی','ذخیره‌شده ← الکتریکی','نورانی ← الکتریکی','صوتی ← الکتریکی'] },
+  { q:'باتری موبایل در حال شارژ', e:'🔋', ans:'الکتریکی ← شیمیایی', opts:['شیمیایی ← الکتریکی','الکتریکی ← شیمیایی','نورانی ← شیمیایی','حرکتی ← الکتریکی'] },
+  { q:'مالش دست‌ها به هم', e:'🤲', ans:'حرکتی ← گرمایی', opts:['حرکتی ← گرمایی','الکتریکی ← گرمایی','نورانی ← گرمایی','صوتی ← گرمایی'] },
+  { q:'کرم شب‌تاب', e:'✨', ans:'شیمیایی ← نورانی', opts:['الکتریکی ← نورانی','شیمیایی ← نورانی','نورانی ← شیمیایی','گرمایی ← نورانی'] },
+  { q:'تیر و کمان (رها شده)', e:'🏹', ans:'ذخیره‌شده ← حرکتی', opts:['شیمیایی ← حرکتی','ذخیره‌شده ← حرکتی','الکتریکی ← حرکتی','نورانی ← حرکتی'] },
+];
+
+GAME_STARTERS.lesson9 = function() {
+  state.data = { items: pickN(LESSON9, 7), answered: false };
+  renderL9();
+};
+function renderL9() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 15);
+  const item = state.data.items[state.idx];
+  const opts = shuffle(item.opts.slice());
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="big-item">${item.e}</div>
+    <div class="question">در «${item.q}» چه تبدیلی رخ می‌دهد؟</div>
+    <div class="btn-group">
+      ${opts.map(o => `<button class="opt-btn" onclick="answerL9('${o.replace(/'/g,"\\'")}', this)">${o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL9(choice, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const item = state.data.items[state.idx];
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (choice === item.ans) { state.score += 15; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = '✅ درسته!'; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.textContent.trim() === item.ans) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = `❌ نه، جواب درست: ${item.ans}`; }
+  state.idx++;
+  setTimeout(renderL9, 1500);
+}
+
+// ==================================================
+// GAME 8: درس ۱۱ - فتوسنتز
+// ==================================================
+const LESSON11 = [
+  { n:'آب',                 e:'💧', t:'ورودی',  why:'ریشه‌ها آب را از خاک می‌گیرند' },
+  { n:'کربن دی‌اکسید',     e:'💨', t:'ورودی',  why:'از راه روزنه‌های برگ از هوا گرفته می‌شود' },
+  { n:'نور خورشید',         e:'☀️', t:'ورودی',  why:'سبزینه انرژی نور را جذب می‌کند' },
+  { n:'اکسیژن',             e:'🌬️', t:'خروجی', why:'از روزنه‌های برگ خارج می‌شود' },
+  { n:'قند (گلوکز)',        e:'🍯', t:'خروجی', why:'غذای گیاه است و در آن ذخیره می‌شود' },
+  { n:'سبزینه (کلروفیل)',  e:'🍃', t:'ابزار',  why:'ابزار جذب نور است' },
+  { n:'نشاسته',             e:'🥔', t:'خروجی', why:'غذای ذخیره‌شده گیاه است' },
+  { n:'روزنه برگ',          e:'👁️', t:'ابزار',  why:'محل ورود و خروج گازهاست' },
+  { n:'آوند',               e:'🪈', t:'ابزار',  why:'آب و مواد را جابجا می‌کند' },
+  { n:'ریشه',               e:'🌱', t:'ابزار',  why:'آب را از خاک می‌گیرد' },
+];
+
+GAME_STARTERS.lesson11 = function() {
+  state.data = { items: pickN(LESSON11, 7), answered: false };
+  renderL11();
+};
+function renderL11() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 15);
+  const item = state.data.items[state.idx];
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">در فتوسنتز، این مورد چه نقشی دارد؟</div>
+    <div class="big-item">${item.e}</div>
+    <div class="item-name">${item.n}</div>
+    <div class="btn-group">
+      <button class="opt-btn" onclick="answerL11('ورودی', this)">⬇️ ورودی</button>
+      <button class="opt-btn" onclick="answerL11('خروجی', this)">⬆️ خروجی</button>
+      <button class="opt-btn" onclick="answerL11('ابزار', this)">🔧 ابزار</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL11(choice, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const item = state.data.items[state.idx];
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (choice === item.t) { state.score += 15; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = `✅ درسته! ${item.why}`; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.textContent.includes(item.t)) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = `❌ نه، "${item.n}" ${item.t} است. ${item.why}`; }
+  state.idx++;
+  setTimeout(renderL11, 2200);
+}
+
+// ==================================================
+// GAME 9: درس ۱۲ - زنجیره غذایی
+// ==================================================
+const CHAINS_DATA = [
+  { name:'جنگل بلوط', items:[{n:'برگ بلوط',e:'🍃'},{n:'موش',e:'🐭'},{n:'مار',e:'🐍'},{n:'شاهین',e:'🦅'}] },
+  { name:'چمن‌زار',   items:[{n:'هویج',e:'🥕'},{n:'خرگوش',e:'🐰'},{n:'روباه',e:'🦊'}] },
+  { name:'مزرعه',     items:[{n:'گیاه',e:'🌾'},{n:'ملخ',e:'🦗'},{n:'قورباغه',e:'🐸'},{n:'مار',e:'🐍'}] },
+  { name:'دریا',      items:[{n:'جلبک',e:'🌿'},{n:'ماهی کوچک',e:'🐟'},{n:'ماهی بزرگ',e:'🐠'},{n:'کوسه',e:'🦈'}] },
+  { name:'قطب',       items:[{n:'جلبک',e:'🌿'},{n:'کریل',e:'🦐'},{n:'ماهی',e:'🐟'},{n:'پنگوئن',e:'🐧'},{n:'فوک',e:'🦭'}] },
+];
+
+GAME_STARTERS.lesson12 = function() {
+  state.data = { list: shuffle(CHAINS_DATA).slice(0, 3), idx: 0, current: null, filled: [], pool: [] };
+  loadChain();
+};
+function loadChain() {
+  if (state.data.idx >= state.data.list.length) return finishGame(state.data.list.length * 30 + 20);
+  const chain = state.data.list[state.data.idx];
+  state.data.current = chain;
+  state.data.filled = [];
+  state.data.pool = shuffle(chain.items);
+  renderChain();
+}
+function renderChain() {
+  const chain = state.data.current;
+  const el = document.getElementById('gameContent');
+  let slotsHTML = '';
+  chain.items.forEach((_, i) => {
+    const f = state.data.filled[i];
+    slotsHTML += `<div class="${f ? 'slot filled' : 'slot'}">${f ? `<div class="em">${f.e}</div><div class="nm">${f.n}</div>` : '<div class="em">؟</div>'}</div>`;
+    if (i < chain.items.length - 1) slotsHTML += '<div class="arrow">→</div>';
+  });
+  el.innerHTML = `
+    <div class="progress">زنجیره ${state.data.idx + 1} از ${state.data.list.length} - ${chain.name}</div>
+    <div class="question">جانداران را به ترتیب زنجیره غذایی بچین 🍽️</div>
+    <div class="chain-slots">${slotsHTML}</div>
+    <div class="pool" id="poolWrap"></div>
+    <div class="feedback" id="fb">👉 باید اول ${chain.items[0].n} انتخاب شود</div>
+  `;
+  const pool = document.getElementById('poolWrap');
+  state.data.pool.forEach(item => {
+    const used = state.data.filled.find(f => f && f.n === item.n);
+    const div = document.createElement('div');
+    div.className = 'pool-item' + (used ? ' used' : '');
+    div.innerHTML = `<div class="em">${item.e}</div><div class="nm">${item.n}</div>`;
+    if (!used) div.onclick = () => pickChain(item);
+    pool.appendChild(div);
+  });
+}
+function pickChain(item) {
+  const chain = state.data.current;
+  const next = state.data.filled.length;
+  const fb = document.getElementById('fb');
+  if (item.n === chain.items[next].n) {
+    state.data.filled.push(item);
+    state.score += 30; updateScore();
+    fb.className = 'feedback ok'; fb.textContent = `✅ درست! ${item.n}`;
+    setTimeout(() => {
+      if (state.data.filled.length === chain.items.length) {
+        state.score += 20; updateScore();
+        state.data.idx++;
+        fb.textContent = '🎉 زنجیره کامل شد!';
+        setTimeout(loadChain, 1000);
+      } else renderChain();
+    }, 600);
+  } else {
+    fb.className = 'feedback no'; fb.textContent = `❌ نه، الان نوبت "${item.n}" نیست.`;
+  }
+}
+
+// ==================================================
+// GAME 10: درس ۱۳ - میکروب‌ها
+// ==================================================
+const LESSON13 = [
+  { q:'بیماری‌های واگیر چگونه منتقل می‌شوند؟',
+    opts:['از راه ژنتیک','از فردی به فرد دیگر','از راه ورزش','تصادفی'], ans:1 },
+  { q:'اولین سد دفاعی بدن در برابر میکروب‌ها چیست؟',
+    opts:['پوست','قلب','مغز','روده'], ans:0 },
+  { q:'کدام گلبول به میکروب‌ها حمله می‌کند؟',
+    opts:['قرمز','سفید','پلاکت','خون‌ساز'], ans:1 },
+  { q:'ماده‌ای که گلبول سفید برای غیرفعال کردن میکروب ترشح می‌کند چه نام دارد؟',
+    opts:['پادتن','انسولین','آدرنالین','هموگلوبین'], ans:0 },
+  { q:'واکسن چه می‌کند؟',
+    opts:['بیماری را درمان می‌کند','بدن را مقاوم می‌کند','میکروب می‌کشد','خون می‌سازد'], ans:1 },
+  { q:'آنتی‌بیوتیک برای کدام بیماری مؤثر است؟',
+    opts:['سرماخوردگی (ویروسی)','آنفلوانزا (ویروسی)','گلودرد چرکی (باکتریایی)','کووید ۱۹'], ans:2 },
+  { q:'کدام جانور ناقل بیماری است؟',
+    opts:['پشه مالاریا','پروانه','زنبور عسل','گربه'], ans:0 },
+  { q:'برای جلوگیری از بیماری واگیر، کدام کار درست است؟',
+    opts:['شستن دست با صابون','نزدیک شدن به بیمار','نفس کشیدن عمیق','لمس زخم'], ans:0 },
+  { q:'باکتری‌های مفید روده چه می‌کنند؟',
+    opts:['بیماری می‌دهند','ویتامین تولید می‌کنند','خون می‌خورند','مخاط می‌سازند'], ans:1 },
+  { q:'اگر آنتی‌بیوتیک را سر وقت نخوریم چه می‌شود؟',
+    opts:['بهتر می‌شویم','میکروب‌ها مقاوم می‌شوند','بیماری خوب می‌شود','هیچ اتفاقی نمی‌افتد'], ans:1 },
+];
+
+GAME_STARTERS.lesson13 = function() {
+  state.data = { items: pickN(LESSON13, 6), answered: false };
+  renderL13();
+};
+function renderL13() {
+  if (state.idx >= state.data.items.length) return finishGame(state.data.items.length * 15);
+  const item = state.data.items[state.idx];
+  const opts = shuffle(item.opts.map((o, i) => ({ o, correct: i === item.ans })));
+  document.getElementById('gameContent').innerHTML = `
+    <div class="progress">سؤال ${state.idx + 1} از ${state.data.items.length}</div>
+    <div class="question">${item.q}</div>
+    <div class="btn-group">
+      ${opts.map(o => `<button class="opt-btn" onclick="answerL13(${o.correct}, this)">${o.o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  state.data.answered = false;
+}
+function answerL13(correct, btn) {
+  if (state.data.answered) return;
+  state.data.answered = true;
+  const fb = document.getElementById('fb');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  if (correct) { state.score += 15; updateScore(); btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = '✅ درسته!'; }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = '❌ اشتباه بود.'; }
+  state.idx++;
+  setTimeout(renderL13, 1300);
+}
+
+// ==================================================
+// راه‌اندازی
+// ==================================================
+</script>
+</body>
+</html>
